@@ -1,0 +1,117 @@
+#Function A
+
+def reverse_string(s):
+    return s[::-1]
+#It creates a new reversed copy of the original string.
+# Space complexity: O(n), where n is the length of the string.
+# The function creates a new string containing all n characters, requiring memory proportional to the input size.
+
+# Function B
+
+def count_letters(text):
+    counts = {}
+    for char in text:
+        counts[char] = counts.get(char, 0) + 1
+    return counts
+# It stores each unique character and its count inside a dictionary.
+# Memory used: Every character is different.  Dictionary stores n entries.
+# Space complexity: O(n), where n is the number of unique characters in the input string.
+# Explanation: The dictionary may store every character in the input, so the extra memory grows linearly with the input size.
+
+# Function C
+
+def matrix_identity(n):
+    return [[1 if i == j else 0 for j in range(n)] for i in range(n)]
+# It creates a new n x n matrix (list of lists) to represent the identity matrix.
+# Space complexity: O(n^2), where n is the size of the matrix.
+# Explanation: The function generates a two-dimensional list with n rows and n columns, requiring memory proportional to the square of the input size.
+
+# Function D
+
+def running_sum(numbers):
+    total = 0
+    for num in numbers:
+        total += num
+    print(total)
+# It uses a single variable to accumulate the sum of the numbers in the input list.
+# Space complexity: O(1), constant space.
+# Explanation: The function only uses a fixed amount of extra space (the variable `total`), regardless of the size of the input list.
+
+
+# Part 2 – Tradeoff Decision
+# Suppose you have a CSV file with 5 million email addresses.
+# Goal is to find duplicate emails.
+# Approach 1 – Use a Set Idea, read every email. If it's already in the set,it's a duplicate.  Otherwise, add it.
+
+# Time Complexity: O(n)
+# Space Complexity: O(n)
+
+def find_duplicates_set(filename):
+    seen = set()
+    duplicates = set()
+
+    with open(filename, "r") as file:
+        for line in file:
+            email = line.strip()
+
+            if email in seen:
+                duplicates.add(email)
+            else:
+                seen.add(email)
+
+    return duplicates
+
+# Why?
+# Each lookup in a set is approximately 0(1) so 5 million lookups will take about 0(n). The space complexity is O(n) because we are storing all unique emails in the set. 
+
+# Approach 2 – Sort Then Scan
+
+# Idea:
+# Sort the file.
+# Duplicate emails become adjacent.
+# Compare each email with the previous one.
+
+# Time Complexity: O(n log n)
+# Space Complexity: O(1) extra (if using external sorting)
+
+def find_duplicates_sorted(sorted_filename):
+    duplicates = []
+
+    with open(sorted_filename, "r") as file:
+        previous = None
+
+        for line in file:
+            email = line.strip()
+
+            if email == previous:
+                duplicates.append(email)
+
+            previous = email
+
+    return duplicates
+
+# Why?
+# Sorting dominates the work. Sorting costs O(n log n) time. The space complexity is O(1) extra if we can sort the file in place or use external sorting techniques that do not require additional memory proportional to the input size. Scanning afterward is linear, O(n), but does not require additional space beyond a few variables.
+
+# Which would I choose?
+# Machine with 4 GB RAM, I would choose the sorting approach.
+# Reason:
+# A set containing millions of email addresses can consume several gigabytes of memory once Python object overhead is included. On a machine with only 4 GB of RAM, this may lead to excessive memory usage or even cause the program to fail. An external sort processes the data in chunks, making it much more memory-efficient even though it is slower.
+
+# Machine with 64 GB RAM, I would choose the set approach.
+# Reason:
+# With 64 GB of RAM, there is enough memory to store millions of email addresses in a set. This allows the algorithm to run in O(n) time, making it significantly faster than sorting while still fitting comfortably in memory.
+
+# Final Answers
+
+# Part 1
+# Function A: O(n) – Creates a new reversed string of size n.
+# Function B: O(n) – The dictionary can store up to n unique characters.
+# Function C: O(n²) – Stores an n × n matrix.
+# Function D: O(1) – Uses only a fixed number of variables.
+
+# Part 2
+# Approach 1 (Set): Time = O(n), Space = O(n).
+# Approach 2 (Sort + Scan): Time = O(n log n), Space = O(1) extra (using # external sorting).
+# 4 GB RAM: Choose the Sort + Scan approach because it minimizes memory usage.
+# 64 GB RAM: Choose the Set approach because it provides the fastest runtime and the available memory can accommodate the data.
